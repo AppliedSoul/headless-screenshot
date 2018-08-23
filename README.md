@@ -4,8 +4,9 @@
  [![Build Status](https://travis-ci.org/AppliedSoul/headless-screenshot.svg?branch=master)](https://travis-ci.org/AppliedSoul/headless-screenshot) [![Coverage Status](https://coveralls.io/repos/github/AppliedSoul/headless-screenshot/badge.svg?branch=master)](https://coveralls.io/github/AppliedSoul/crawlmatic?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/AppliedSoul/headless-screenshot.svg)](https://greenkeeper.io/)   
 
 
-headless-screenshot is a highlevel library which wraps puppeteer calls inside Bluebird promises and
-provides safe and easy to use wrapper to take website screenshots.
+headless-screenshot is a high-level on top of headless embedded chromium browser (puppeteer). It provides safe & easy to use interface for taking screenshot of websites.   
+
+Built with :heart:
 
 
  Usage:
@@ -23,3 +24,5 @@ hc.setup() // launches embedded chromium instance
         writeFile('./example.png',res.data).then(() => console.log('file is written'));
     }).finally(() => hc.destroy())
 ```
+
+For reference look at test cases.
