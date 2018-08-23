@@ -27,11 +27,13 @@ module.exports = class BrowserScreenshot {
     let pageId = _.uniqueId('page_')
     let device = _.get(opts, 'device', null);
     let foundDevice = null;
+    let foundDeviceKey = null;
+
     if (device && _.isString(device)) {
-      let foundDeviceKey = _.findKey(devices, function(dev) {
+      foundDeviceKey = _.findKey(devices, function(dev) {
         return dev.name.toLowerCase() === device.toLowerCase();
       })
-      if (foundDeviceKey) {
+      if (!_.isNil(foundDeviceKey)) {
         foundDevice = devices[foundDeviceKey];
       }
     }
@@ -147,7 +149,7 @@ module.exports = class BrowserScreenshot {
    * - @param  {String}  type          output type as png or jpg.
    * - @param  {String}  encoding      binary or base64
    * - @param  {Boolean} [reuse=false] reuse page for further requests after request is over - Pages are put inside a pool
-   * @return {Promise[Object]}                Returns a promise - with result containing 
+   * @return {Promise[Object]}                Returns a promise - with result containing
    * - @param   {String}  url            original url.
    * - @param  {String}  resolvedUrl    url which got resolved by the browser
    * - @param  {Buffer}  image          output type as png or jpg. having encoding of binary or jpg ( specified under options)
