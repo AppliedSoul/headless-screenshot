@@ -1,7 +1,7 @@
 {
   "name": "headless-screenshot",
-  "version": "0.1.1",
-  "description": "",
+  "version": "0.1.2",
+  "description": "headless chromium library for takaing website screenshots.",
   "main": "index.js",
   "scripts": {
     "test": "node_modules/mocha/bin/mocha",
