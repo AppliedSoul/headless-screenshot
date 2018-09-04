@@ -1,7 +1,7 @@
-const puppeteer = require('puppeteer');
-const devices = require('puppeteer/DeviceDescriptors');
-const _ = require('lodash');
-const Promise = require('bluebird');
+const puppeteer = require("puppeteer");
+const devices = require("puppeteer/DeviceDescriptors");
+const _ = require("lodash");
+const Promise = require("bluebird");
 
 /**
  * BrowserScreenshot Highlevel library to export
@@ -18,21 +18,25 @@ module.exports = class BrowserScreenshot {
    */
   constructor(options) {
     this.options = options || {};
+    this.options.args = _.concat(this.options.args || [], [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
+    ]);
     this.browser = null;
     this.pages = [];
     this.usingPages = new Map();
   }
 
   getPage(opts) {
-    let pageId = _.uniqueId('page_')
-    let device = _.get(opts, 'device', null);
+    let pageId = _.uniqueId("page_");
+    let device = _.get(opts, "device", null);
     let foundDevice = null;
     let foundDeviceKey = null;
 
     if (device && _.isString(device)) {
       foundDeviceKey = _.findKey(devices, function(dev) {
         return dev.name.toLowerCase() === device.toLowerCase();
-      })
+      });
       if (!_.isNil(foundDeviceKey)) {
         foundDevice = devices[foundDeviceKey];
       }
@@ -63,54 +67,65 @@ module.exports = class BrowserScreenshot {
         };
       })
     */
-    let getPageResouce = () => new Promise((resolve, reject) => {
-      if (this.pages.length) {
-        resolve(this.pages.pop());
-      } else {
-        if (this.browser) {
-          Promise.try(() => this.browser.newPage()).then(page => resolve(page)).catch(e => reject(e));
+    let getPageResouce = () =>
+      new Promise((resolve, reject) => {
+        if (this.pages.length) {
+          resolve(this.pages.pop());
         } else {
-          reject(new Error('browser not initialized'));
-        }
-      }
-    });
-
-    let pagePromise = () => new Promise((resolve, reject) => {
-      getPageResouce()
-        .then((page) => {
-          if (foundDevice) {
-            page.emulate(foundDevice).then(() => resolve(page)).catch(e => reject(e));
+          if (this.browser) {
+            Promise.try(() => this.browser.newPage())
+              .then(page => resolve(page))
+              .catch(e => reject(e));
           } else {
-            return resolve(page);
+            reject(new Error("browser not initialized"));
           }
-        }).catch(e => {
-          reject(e)
-        });
-    })
+        }
+      });
+
+    let pagePromise = () =>
+      new Promise((resolve, reject) => {
+        getPageResouce()
+          .then(page => {
+            if (foundDevice) {
+              page
+                .emulate(foundDevice)
+                .then(() => resolve(page))
+                .catch(e => reject(e));
+            } else {
+              return resolve(page);
+            }
+          })
+          .catch(e => {
+            reject(e);
+          });
+      });
 
     return new Promise((resolve, reject) => {
-      pagePromise().then((page) => {
-        this.usingPages.set(pageId, page);
-        return resolve({
-          id: pageId,
-          page: page
-        });
-      }).catch(e => reject(e));
+      pagePromise()
+        .then(page => {
+          this.usingPages.set(pageId, page);
+          return resolve({
+            id: pageId,
+            page: page
+          });
+        })
+        .catch(e => reject(e));
     });
-
   }
 
   destroy() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (this.browser) {
-        if (this.pages.length || (!_.isEmpty(this.usingPages))) {
-          _.concat(this.pages, Array.from(this.usingPages.values())).forEach(page => _.attempt(() => page.close().catch(e => {})));
+        if (this.pages.length || !_.isEmpty(this.usingPages)) {
+          _.concat(this.pages, Array.from(this.usingPages.values())).forEach(
+            page => _.attempt(() => page.close().catch(e => {}))
+          );
         }
         _.attempt(() => this.browser.close().catch(e => {}));
         this.browser = null;
       }
       resolve();
-    })
+    });
   }
 
   releasePage(pageData) {
@@ -133,10 +148,13 @@ module.exports = class BrowserScreenshot {
    */
   setup() {
     return new Promise((resolve, reject) => {
-      puppeteer.launch(this.options).then(browser => {
-        this.browser = browser;
-        return resolve(this);
-      }).catch(e => reject(e));
+      puppeteer
+        .launch(this.options)
+        .then(browser => {
+          this.browser = browser;
+          return resolve(this);
+        })
+        .catch(e => reject(e));
     });
   }
 
@@ -156,18 +174,23 @@ module.exports = class BrowserScreenshot {
    * - @param  {Boolean} isReachable    If the website was reachable - some cases website is not reachable and blank screenshot is presented,
    * checking this option will handle these edge cases.
    */
-  getScreenshot(url, options = {
-    timeout: 10000,
-    fullPage: true,
-    type: 'png',
-    encoding: 'binary'
-  }, reuse = false) {
+  getScreenshot(
+    url,
+    options = {
+      timeout: 10000,
+      fullPage: true,
+      type: "png",
+      encoding: "binary"
+    },
+    reuse = false
+  ) {
     let opts = _.extend(this.options, options);
-    let waitFor = _.get(opts, 'waitFor', null);
-    let timeout = _.get(opts, 'timeout', 10000);
+    let waitFor = _.get(opts, "waitFor", null);
+    let timeout = _.get(opts, "timeout", 10000);
 
     let pageData = null;
-    return this.getPage(opts).then((data) => {
+    return this.getPage(opts)
+      .then(data => {
         pageData = data;
         let page = data.page;
         let getWaitingPage = () => {
@@ -178,7 +201,7 @@ module.exports = class BrowserScreenshot {
           } else {
             return Promise.race([page.goto(url), page.waitFor(timeout)]);
           }
-        }
+        };
         return getWaitingPage().then(() => {
           return page.screenshot(opts).then(data => {
             let resolvedUrl = page.url();
@@ -186,11 +209,12 @@ module.exports = class BrowserScreenshot {
               url: url,
               resolvedUrl: resolvedUrl,
               data: data,
-              isReachable: !resolvedUrl.toLowerCase().startsWith('chrome-error:')
+              isReachable: !resolvedUrl
+                .toLowerCase()
+                .startsWith("chrome-error:")
             };
           });
         });
-
       })
       .finally(() => {
         if (pageData) {
@@ -200,7 +224,6 @@ module.exports = class BrowserScreenshot {
             this.releasePage(pageData);
           }
         }
-      })
-
+      });
   }
-}
+};
