@@ -1,15 +1,23 @@
 # headless-screenshot
+
 [![npm package](https://nodei.co/npm/headless-screenshot.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/headless-screenshot/)</br>
 
- [![Build Status](https://travis-ci.org/AppliedSoul/headless-screenshot.svg?branch=master)](https://travis-ci.org/AppliedSoul/headless-screenshot) [![Coverage Status](https://coveralls.io/repos/github/AppliedSoul/headless-screenshot/badge.svg?branch=master)](https://coveralls.io/github/AppliedSoul/crawlmatic?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/AppliedSoul/headless-screenshot.svg)](https://greenkeeper.io/)   
+[![Build Status](https://travis-ci.org/AppliedSoul/headless-screenshot.svg?branch=master)](https://travis-ci.org/AppliedSoul/headless-screenshot) [![Coverage Status](https://coveralls.io/repos/github/AppliedSoul/headless-screenshot/badge.svg?branch=master)](https://coveralls.io/github/AppliedSoul/crawlmatic?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/AppliedSoul/headless-screenshot.svg)](https://greenkeeper.io/)
 
-
-headless-screenshot is a high-level on top of headless embedded chromium browser (puppeteer). It provides safe & easy to use interface for taking screenshot of websites.   
+headless-screenshot is a high-level on top of headless embedded chromium browser (puppeteer). It provides safe & easy to use interface for taking screenshot of websites.
 
 Built with :heart:
 
+## Install
 
- Usage:
+headless-screenshot depends on puppeteer, ensure its installed globally or locally before using this library.
+
+```
+npm i puppeteer headless-screenshot
+```
+
+Usage:
+
 ```javascript
 const HeadShot = require('headless-screenshot');
 const Promise = require('bluebird');
